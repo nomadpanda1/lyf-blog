@@ -1,0 +1,11 @@
+# 首页全屏大图 (指向你刚才放进去的图片)
+index_img: /img/bg.jpg
+
+# 头像设置
+avatar:
+  img: /img/avatar.jpg
+
+# 社交链接 (修改为你的专属链接)
+social:
+  fab fa-github: https://github.com/nomadpanda1 || GitHub
+  fas fa-envelope: mailto:863088821@qq.com || Email
