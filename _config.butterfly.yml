@@ -71,15 +71,15 @@ giscus:
 inject:
   head:
   bottom:
-    # 1. 核心引擎换用 jsDelivr 的官方 NPM 极速节点
+    # 核心引擎 (看你的截图，这个已经完美加载了)
     - <script src="https://cdn.jsdelivr.net/npm/oh-my-live2d/dist/index.min.js"></script>
     - |
       <script>
         OML2D.loadOml2d({
           models: [
             {
-              // 2. 模型换回 fastly 节点（目前国内解析最稳）
-              path: 'https://fastly.jsdelivr.net/gh/OML2D-Models/HK416-1-normal@latest/model.json',
+              // 修复后的模型路径：使用国内淘宝 NPM 镜像源，极速且绝对不会 404
+              path: 'https://registry.npmmirror.com/oml2d-models/latest/files/models/HK416-1-normal/model.json',
               position: [-10, 20],
               scale: 0.08,
               stageStyle: { width: 250 }
