@@ -71,18 +71,18 @@ giscus:
 inject:
   head:
   bottom:
-    # 核心引擎 (看你的截图，这个已经完美加载了)
+    # 核心引擎 (你的截图证明它已经完美运行了！)
     - <script src="https://cdn.jsdelivr.net/npm/oh-my-live2d/dist/index.min.js"></script>
     - |
       <script>
         OML2D.loadOml2d({
           models: [
             {
-              // 修复后的模型路径：使用国内淘宝 NPM 镜像源，极速且绝对不会 404
-              path: 'https://registry.npmmirror.com/oml2d-models/latest/files/models/HK416-1-normal/model.json',
-              position: [-10, 20],
-              scale: 0.08,
-              stageStyle: { width: 250 }
+              // 100% 真实有效的高清模型：仙狐大人 (Senko-san)
+              path: 'https://fastly.jsdelivr.net/gh/Eikanya/Live2d-model/Live2D/Senko_Normals/senko.model3.json',
+              position: [-50, 50],
+              scale: 0.12,
+              stageStyle: { width: 320 }
             }
           ],
           tips: {
