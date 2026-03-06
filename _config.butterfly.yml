@@ -72,6 +72,15 @@ inject:
     - |
       <script>
         OML2D.loadOml2d({
+          models: [
+            {
+              // 使用国内访问极速的 jsdelivr fastly 节点
+              path: 'https://fastly.jsdelivr.net/gh/OML2D-Models/HK416-1-normal@latest/model.json',
+              position: [-10, 20],
+              scale: 0.08,
+              stageStyle: { width: 250 }
+            }
+          ],
           tips: {
             message: ['欢迎来到七月的峰の数字自留地！', '今天学 PLC 还是打《战争雷霆》？', '思考，编码，与世界交手。']
           }
