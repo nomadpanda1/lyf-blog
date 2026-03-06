@@ -71,15 +71,15 @@ giscus:
 inject:
   head:
   bottom:
-    # 1. 核心引擎换用国内知乎的高速缓存节点
-    - <script src="https://unpkg.zhimg.com/oh-my-live2d@latest"></script>
+    # 1. 核心引擎换用 jsDelivr 的官方 NPM 极速节点
+    - <script src="https://cdn.jsdelivr.net/npm/oh-my-live2d/dist/index.min.js"></script>
     - |
       <script>
         OML2D.loadOml2d({
           models: [
             {
-              // 2. 模型文件换用国内专属的 GitHub 极速镜像源
-              path: 'https://cdn.jsdmirror.com/gh/OML2D-Models/HK416-1-normal@latest/model.json',
+              // 2. 模型换回 fastly 节点（目前国内解析最稳）
+              path: 'https://fastly.jsdelivr.net/gh/OML2D-Models/HK416-1-normal@latest/model.json',
               position: [-10, 20],
               scale: 0.08,
               stageStyle: { width: 250 }
