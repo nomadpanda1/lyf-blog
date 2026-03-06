@@ -9,6 +9,7 @@ avatar:
 social:
   fab fa-github: https://github.com/nomadpanda1 || GitHub
   fas fa-envelope: mailto:863088821@qq.com || Email
+
 # ==========================================
 # 导航栏 (Menu)
 # ==========================================
@@ -44,6 +45,7 @@ subtitle:
 card_announcement:
   enable: true
   content: 欢迎来到我的数字自留地！目前正在西南石油大学修读电气工程及其自动化，持续更新关于技术、自动化与哲学的思考记录。
+
 # ==========================================
 # 评论系统 (Comments)
 # ==========================================
@@ -62,6 +64,7 @@ giscus:
   theme: light
   light_theme: light
   dark_theme: dark
+
 # ==========================================
 # 脚本注入 (Inject) - 用于挂载次世代看板娘
 # ==========================================
