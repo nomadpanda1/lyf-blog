@@ -62,3 +62,26 @@ giscus:
   theme: light
   light_theme: light
   dark_theme: dark
+# ==========================================
+# 脚本注入 (Inject) - 用于挂载次世代看板娘
+# ==========================================
+inject:
+  head:
+  bottom:
+    - <script src="https://unpkg.com/oh-my-live2d@latest"></script>
+    - |
+      <script>
+        OML2D.loadOml2d({
+          models: [
+            {
+              path: 'https://model.oml2d.com/HK416-1-normal/model.json',
+              position: [-10, 20],
+              scale: 0.08,
+              stageStyle: { width: 250 }
+            }
+          ],
+          tips: {
+            message: ['欢迎来到七月的峰の数字自留地！',  '思考，编码，与世界交手。']
+          }
+        });
+      </script>
