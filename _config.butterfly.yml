@@ -9,3 +9,38 @@ avatar:
 social:
   fab fa-github: https://github.com/nomadpanda1 || GitHub
   fas fa-envelope: mailto:863088821@qq.com || Email
+# ==========================================
+# 导航栏 (Menu)
+# ==========================================
+menu:
+  首页: / || fas fa-home
+  归档: /archives/ || fas fa-archive
+  标签: /tags/ || fas fa-tags
+  分类: /categories/ || fas fa-folder-open
+  关于我: /about/ || fas fa-heart
+
+# ==========================================
+# 主页打字机特效 (Subtitle)
+# ==========================================
+subtitle:
+  enable: true
+  # Typewriter Effect (打字机特效)
+  effect: true
+  # 每次打字的停顿时间
+  timeStep: 50
+  # 停留时间
+  startDelay: 300
+  # 是否循环
+  loop: true
+  # 打字机循环的文案
+  sub:
+    - 思考，编码，与世界交手
+    - 去体验那种荒谬，去穷尽这毫无指望的一生。
+    - 真正的救赎，并不是厮杀后的胜利，而是能在苦难之中找到生的力量和心的安宁。
+
+# ==========================================
+# 侧边栏公告板 (Announcement)
+# ==========================================
+card_announcement:
+  enable: true
+  content: 欢迎来到我的数字自留地！目前正在西南石油大学修读电气工程及其自动化，持续更新关于技术、自动化与哲学的思考记录。
