@@ -75,7 +75,6 @@ inject:
   bottom:
     - |
       <script>
-        // 1. 核心业务逻辑包装
         const loadOML2D = () => {
           const oml2d = OML2D.loadOml2d({
             sayHello: false,
@@ -85,8 +84,8 @@ inject:
             },
             models: [
               {
-                // 使用国内极其稳定的 GitHub 代理节点加载模型
-                path: 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/Eikanya/Live2d-model/master/Live2D/Senko_Normals/senko.model3.json',
+                // 终极修复：使用全球极其稳定的 fastly 节点直连 GitHub 仓库
+                path: 'https://fastly.jsdelivr.net/gh/Eikanya/Live2d-model@master/Live2D/Senko_Normals/senko.model3.json',
                 position: [-50, 50],
                 scale: 0.12,
                 stageStyle: { width: 320 }
@@ -97,7 +96,6 @@ inject:
             }
           });
 
-          // 2. 动态创建聊天按钮
           const chatBtn = document.createElement('div');
           chatBtn.id = 'chat-btn';
           chatBtn.innerText = '💬 呼叫仙狐大人';
@@ -109,7 +107,6 @@ inject:
             else alert("仙狐大人说：" + msg);
           };
 
-          // 3. 绑定 DeepSeek AI 大脑接口
           chatBtn.onclick = async () => {
             const userMsg = prompt("你想对仙狐大人说什么？");
             if (!userMsg) return;
@@ -130,8 +127,6 @@ inject:
           };
         };
 
-        // 4. 【灵魂设计】动态异步加载引擎脚本！
-        // 这样即使网络爆炸，也只会导致看板娘不出现，博客文章绝对秒开！
         const script = document.createElement('script');
         script.src = 'https://fastly.jsdelivr.net/npm/oh-my-live2d/dist/index.min.js';
         script.onload = loadOML2D;
