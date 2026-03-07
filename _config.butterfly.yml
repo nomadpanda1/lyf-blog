@@ -99,15 +99,18 @@ inject:
     - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/github-calendar@2.3.3/dist/github-calendar-responsive.css">'
     - |
       <style>
-        /* 🖱️ 1. 极客鼠标指针 (系统底层十字准星，绝对生效) */
+        /* 🖱️ 1. 极客鼠标指针 */
         html, body { cursor: crosshair !important; }
         a, img, button, input, textarea, #chat-btn, .chat-action-btn, #oml2d-stage { cursor: pointer !important; }
         
-        /* 看板娘与聊天框样式 */
-        #oml2d-stage { left: auto !important; right: 20px !important; bottom: 0 !important; transition: opacity 0.5s ease, visibility 0.5s ease !important; }
-        #chat-btn {position:fixed; bottom:30px; right:330px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;}
+        /* 🚀 修复冲突：看板娘向左移动到 80px，给主题菜单让路 */
+        #oml2d-stage { left: auto !important; right: 80px !important; bottom: 0 !important; transition: opacity 0.5s ease, visibility 0.5s ease !important; }
+        
+        /* 🚀 修复冲突：聊天按钮和面板跟着向左移动 */
+        #chat-btn {position:fixed; bottom:30px; right:400px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;}
         #chat-btn:hover {background:#ff7242; transform:scale(1.05);}
-        #chat-box {position:fixed; bottom:80px; right:330px; z-index:9998; background:rgba(255,255,255,0.85); padding:15px; border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); display:none; flex-direction:column; gap:10px; backdrop-filter:blur(10px); width:280px; border: 1px solid rgba(255,255,255,0.6);}
+        #chat-box {position:fixed; bottom:80px; right:400px; z-index:9998; background:rgba(255,255,255,0.85); padding:15px; border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); display:none; flex-direction:column; gap:10px; backdrop-filter:blur(10px); width:280px; border: 1px solid rgba(255,255,255,0.6);}
+        
         #chat-input {width:100%; border:1px solid #ddd; padding:10px; border-radius:8px; outline:none; font-size:14px; box-sizing:border-box; background:rgba(255,255,255,0.9);}
         #chat-input:focus {border-color:#49b1f5;}
         .chat-action-btn {flex:1; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; transition:all 0.3s; color:white;}
@@ -152,12 +155,12 @@ inject:
           });
         };
 
-        // 🟩 2. 全息 3D 标签云 
+        // 🟩 2. 全息 3D 标签云
         const initTagCloud = () => {
           const tagCloud = document.querySelector('.tag-cloud-list') || document.querySelector('.tag-cloud-tags');
           if (tagCloud && !document.getElementById('tag-canvas')) {
             const tags = tagCloud.querySelectorAll('a');
-            if(tags.length === 0) return; // 如果没有标签则不渲染
+            if(tags.length === 0) return; // 没标签就不渲染
             tagCloud.id = 'tag-cloud-list-id'; tagCloud.style.display = 'none';
             const canvas = document.createElement('canvas'); canvas.id = 'tag-canvas';
             canvas.width = tagCloud.parentElement.offsetWidth || 300; canvas.height = canvas.width * 0.75;
@@ -168,14 +171,12 @@ inject:
           }
         };
 
-        // 📊 3. GitHub 热力图日历 (卡片级完美镶嵌版)
+        // 📊 3. GitHub 热力图日历
         const initGitHubCalendar = () => {
-          // 【严格限制】只在博客首页运行！绝不污染标签页和文章页
           if (location.pathname !== '/' && location.pathname !== '/index.html') return;
           const recentPosts = document.getElementById('recent-posts');
           if (recentPosts && !document.getElementById('github-calendar-card')) {
             const card = document.createElement('div');
-            // 使用主题原生的卡片样式，完美融入排版
             card.className = 'recent-post-item'; 
             card.id = 'github-calendar-card';
             card.style.padding = '24px';
