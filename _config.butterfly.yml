@@ -102,7 +102,8 @@ giscus:
 # ==========================================
 inject:
   head:
-    # 💥【核武级修复】将 Pjax 强行写死在最头部，绝对不再断流！
+    # 🛡️【终极防爆网】伪装 typed 变量，彻底解决 Pjax 切换崩溃问题！
+    - '<script>window.typed = window.typed || { destroy: () => {} };</script>'
     - '<script src="https://fastly.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script>'
     - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">'
     - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">'
@@ -342,6 +343,8 @@ inject:
         };
 
         window.addEventListener('load', bootAll);
+        
+        // Pjax 无缝引擎钩子：页面切换时重新渲染内部特效！
         document.addEventListener('pjax:complete', () => { 
           try { initAIAbs(); } catch(e){} 
           try { initTagCloud(); } catch(e){}
