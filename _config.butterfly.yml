@@ -11,7 +11,7 @@ social:
   fas fa-envelope: mailto:863088821@qq.com || Email
 
 # ==========================================
-# 终极脱钩策略：强制本地化加载核心组件 (彻底解决图标和导航栏消失问题)
+# 核心防墙设置：强制本地加载，斩断图标丢失的可能
 # ==========================================
 CDN:
   internal_provider: local
@@ -19,17 +19,31 @@ CDN:
   custom_format: 'https://fastly.jsdelivr.net/npm/${npm_name}@${version}/${file}'
 
 # ==========================================
-# 导航栏 (Menu)
+# 引擎超频：Pjax 无缝加载 (沉浸式BGM的核心)
+# ==========================================
+pjax:
+  enable: true
+
+# ==========================================
+# 极客美学：Mac风格代码块 & 顶部阅读进度条
+# ==========================================
+highlight_theme: mac
+code_mac_copy: true
+progress_bar: true
+
+# ==========================================
+# 导航栏 (已增加：灵感捕手 Bber 的专属入口)
 # ==========================================
 menu:
   首页: / || fas fa-home
+  灵感(Bber): /bber/ || fas fa-comment-dots
   归档: /archives/ || fas fa-archive
   标签: /tags/ || fas fa-tags
   分类: /categories/ || fas fa-folder-open
   关于我: /about/ || fas fa-heart
 
 # ==========================================
-# 昼夜交替 (暗黑模式)
+# 昼夜交替 (暗黑模式开关)
 # ==========================================
 darkmode:
   enable: true
@@ -76,30 +90,73 @@ giscus:
   dark_theme: dark
 
 # ==========================================
-# 脚本注入 - AI看板娘、粒子背景、UI修正
+# 脚本注入 - AI看娘、AI摘要、音乐、粒子、UI
 # ==========================================
 inject:
   head:
-    - '<style>#chat-btn {position:fixed; bottom:30px; right:280px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;} #chat-btn:hover {background:#ff7242; transform:scale(1.05);} #chat-box {position:fixed; bottom:80px; right:280px; z-index:9998; background:rgba(255,255,255,0.85); padding:15px; border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); display:none; flex-direction:column; gap:10px; backdrop-filter:blur(10px); width:260px; border: 1px solid rgba(255,255,255,0.6);} #chat-input {width:100%; border:1px solid #ddd; padding:10px; border-radius:8px; outline:none; font-size:14px; box-sizing:border-box; background:rgba(255,255,255,0.9);} #chat-input:focus {border-color:#49b1f5;} #chat-submit {background:#49b1f5; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; transition:all 0.3s;} #chat-submit:hover {background:#ff7242;}</style>'
+    - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">'
+    - |
+      <style>
+        /* 聊天按钮与面板 */
+        #chat-btn {position:fixed; bottom:30px; right:280px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;}
+        #chat-btn:hover {background:#ff7242; transform:scale(1.05);}
+        #chat-box {position:fixed; bottom:80px; right:280px; z-index:9998; background:rgba(255,255,255,0.85); padding:15px; border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); display:none; flex-direction:column; gap:10px; backdrop-filter:blur(10px); width:260px; border: 1px solid rgba(255,255,255,0.6);}
+        #chat-input {width:100%; border:1px solid #ddd; padding:10px; border-radius:8px; outline:none; font-size:14px; box-sizing:border-box; background:rgba(255,255,255,0.9);}
+        #chat-input:focus {border-color:#49b1f5;}
+        #chat-submit {background:#49b1f5; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; transition:all 0.3s;}
+        #chat-submit:hover {background:#ff7242;}
+        /* AI 文章智能摘要样式 */
+        #ai-abs-box { background: rgba(73,177,245,0.05); border: 1px solid #49b1f5; border-radius: 8px; padding: 15px; margin-bottom: 20px; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        .ai-title { font-weight: bold; color: #49b1f5; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+        .ai-content { color: #555; line-height: 1.6; min-height: 22px;}
+        [data-theme="dark"] .ai-content { color: #ccc; }
+      </style>
   bottom:
     - '<script type="text/javascript" src="https://fastly.jsdelivr.net/npm/canvas-nest.js@2.0.4/dist/canvas-nest.js" color="73,177,245" opacity="0.8" zIndex="1" count="99"></script>'
+    - '<script src="https://fastly.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>'
+    - '<script src="https://fastly.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>'
+    - '<meting-js server="tencent" type="playlist" id="7455209707" fixed="true" mini="true" autoplay="false" loop="all" order="random" preload="auto" volume="0.5"></meting-js>'
     - |
       <script>
-        const loadOML2D = () => {
+        // 1. AI 文章智能摘要引擎 (支持 Pjax 无缝加载)
+        const initAIAbs = () => {
+          const postHeader = document.querySelector('#post');
+          if(!postHeader || document.getElementById('ai-abs-box')) return;
+          const content = document.querySelector('.post-content');
+          if(!content) return;
+
+          // 提取文章前150字作为摘要基底
+          const rawText = content.innerText.replace(/\s+/g, ' ').substring(0, 150) + '...';
+          const box = document.createElement('div');
+          box.id = 'ai-abs-box';
+          box.innerHTML = `<div class="ai-title">🤖 赛博仙狐的脑内运算摘要</div><div class="ai-content"></div>`;
+          postHeader.insertBefore(box, postHeader.firstChild);
+
+          // 极客打字机特效
+          let i = 0;
+          const typeWriter = setInterval(() => {
+            if(i < rawText.length) {
+              box.querySelector('.ai-content').innerHTML += rawText.charAt(i);
+              i++;
+            } else { clearInterval(typeWriter); }
+          }, 30);
+        };
+
+        // 2. 仙狐大人与萝莉音引擎 (防重复加载)
+        const initOML2D = () => {
+          if(window.oml2d_loaded) return;
+          window.oml2d_loaded = true;
+
           const oml2d = OML2D.loadOml2d({
             sayHello: false,
             libraryUrls: {
               cubism2: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2d.min.js',
               cubism5: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2dcubismcore.min.js'
             },
-            models: [
-              {
-                path: 'https://fastly.jsdelivr.net/gh/Eikanya/Live2d-model@master/Live2D/Senko_Normals/senko.model3.json',
-                position: [-50, 50],
-                scale: 0.12,
-                stageStyle: { width: 320 }
-              }
-            ],
+            models: [{
+              path: 'https://fastly.jsdelivr.net/gh/Eikanya/Live2d-model@master/Live2D/Senko_Normals/senko.model3.json',
+              position: [-50, 50], scale: 0.12, stageStyle: { width: 320 }
+            }],
             tips: {
               style: { width: '240px', minHeight: '70px', padding: '14px', fontSize: '14px', lineHeight: '1.6', wordBreak: 'break-word' },
               message: ['欢迎来到七月的峰の数字自留地！', '代码跑不通？不如去打把《战争雷霆》。', '推石头的西西弗斯，今天也要加油哦！']
@@ -107,8 +164,7 @@ inject:
           });
 
           const chatBtn = document.createElement('div');
-          chatBtn.id = 'chat-btn';
-          chatBtn.innerText = '💬 呼叫仙狐大人';
+          chatBtn.id = 'chat-btn'; chatBtn.innerText = '💬 呼叫仙狐大人';
           document.body.appendChild(chatBtn);
 
           const chatBox = document.createElement('div');
@@ -128,11 +184,9 @@ inject:
             if (!window.speechSynthesis) return;
             window.speechSynthesis.cancel(); 
             const msg = new SpeechSynthesisUtterance(text);
-            msg.lang = 'zh-CN';
-            msg.rate = 1.15; 
-            msg.pitch = 1.5; 
+            msg.lang = 'zh-CN'; msg.rate = 1.15; msg.pitch = 1.5; 
             const voices = window.speechSynthesis.getVoices();
-            const loliVoice = voices.find(v => v.lang.includes('zh') && (v.name.includes('Xiaoyi') || v.name.includes('晓伊') || v.name.includes('童') || v.name.includes('girl'))) 
+            const loliVoice = voices.find(v => v.lang.includes('zh') && (v.name.includes('Xiaoyi') || v.name.includes('童') || v.name.includes('girl'))) 
                            || voices.find(v => v.lang.includes('zh') && (v.name.includes('Xiaoxiao') || v.name.includes('女') || v.name.includes('Female')));
             if (loliVoice) msg.voice = loliVoice;
             window.speechSynthesis.speak(msg);
@@ -148,13 +202,11 @@ inject:
           const sendMessage = async () => {
             const userMsg = inputField.value.trim();
             if (!userMsg) return;
-            inputField.value = '';
-            chatBox.style.display = 'none';
+            inputField.value = ''; chatBox.style.display = 'none';
             safeShowMsg('仙狐正在脑内运算中...🦊');
             try {
               const res = await fetch('https://senko-ai-proxy.htklyf123.workers.dev', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: userMsg })
               });
               const data = await res.json();
@@ -167,8 +219,8 @@ inject:
           inputField.onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
         };
 
-        const script = document.createElement('script');
-        script.src = 'https://fastly.jsdelivr.net/npm/oh-my-live2d/dist/index.min.js';
-        script.onload = loadOML2D;
-        document.body.appendChild(script);
+        // 3. 执行启动逻辑 (监听原生与 Pjax 路由)
+        initOML2D();
+        initAIAbs();
+        document.addEventListener('pjax:complete', initAIAbs);
       </script>
