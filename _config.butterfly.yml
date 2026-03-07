@@ -1,14 +1,21 @@
-# 首页全屏大图 (指向你刚才放进去的图片)
+# 首页全屏大图
 index_img: /img/bg.jpg
 
 # 头像设置
 avatar:
   img: /img/avatar.jpg
 
-# 社交链接 (修改为你的专属链接)
+# 社交链接
 social:
   fab fa-github: https://github.com/nomadpanda1 || GitHub
   fas fa-envelope: mailto:863088821@qq.com || Email
+
+# ==========================================
+# 核心防墙设置：强制切换主题默认 CDN (解决白屏真凶)
+# ==========================================
+CDN:
+  internal_provider: cdnjs
+  third_party_provider: cdnjs
 
 # ==========================================
 # 导航栏 (Menu)
@@ -60,71 +67,73 @@ giscus:
   dark_theme: dark
 
 # ==========================================
-# 脚本注入 (Inject) - 用于挂载次世代看板娘 + AI大脑
+# 脚本注入 (Inject) - 异步防阻塞加载模式
 # ==========================================
 inject:
   head:
-    - <style>#chat-btn {position:fixed; bottom:30px; right:280px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;} #chat-btn:hover {background:#ff7242; transform:scale(1.05);}</style>
+    - '<style>#chat-btn {position:fixed; bottom:30px; right:280px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;} #chat-btn:hover {background:#ff7242; transform:scale(1.05);}</style>'
   bottom:
-    - <script src="https://cdn.jsdelivr.net/npm/oh-my-live2d/dist/index.min.js"></script>
     - |
       <script>
-        // 1. 初始化看板娘实例
-        const oml2d = OML2D.loadOml2d({
-          sayHello: false,
-          libraryUrls: {
-            cubism2: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2d.min.js',
-            cubism5: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2dcubismcore.min.js'
-          },
-          models: [
-            {
-              path: 'https://fastly.jsdelivr.net/gh/Eikanya/Live2d-model/Live2D/Senko_Normals/senko.model3.json',
-              position: [-50, 50],
-              scale: 0.12,
-              stageStyle: { width: 320 }
+        // 1. 核心业务逻辑包装
+        const loadOML2D = () => {
+          const oml2d = OML2D.loadOml2d({
+            sayHello: false,
+            libraryUrls: {
+              cubism2: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2d.min.js',
+              cubism5: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2dcubismcore.min.js'
+            },
+            models: [
+              {
+                // 使用国内极其稳定的 GitHub 代理节点加载模型
+                path: 'https://mirror.ghproxy.com/https://raw.githubusercontent.com/Eikanya/Live2d-model/master/Live2D/Senko_Normals/senko.model3.json',
+                position: [-50, 50],
+                scale: 0.12,
+                stageStyle: { width: 320 }
+              }
+            ],
+            tips: {
+              message: ['欢迎来到七月的峰の数字自留地！', '遇到Bug不要慌，先喝口水~', '思考，编码，与世界交手。']
             }
-          ],
-          tips: {
-            message: ['欢迎来到七月的峰の数字自留地！', '遇到Bug不要慌，先喝口水~', '思考，编码，与世界交手。']
-          }
-        });
+          });
 
-        // 2. 动态创建聊天按钮
-        const chatBtn = document.createElement('div');
-        chatBtn.id = 'chat-btn';
-        chatBtn.innerText = '💬 呼叫仙狐大人';
-        document.body.appendChild(chatBtn);
+          // 2. 动态创建聊天按钮
+          const chatBtn = document.createElement('div');
+          chatBtn.id = 'chat-btn';
+          chatBtn.innerText = '💬 呼叫仙狐大人';
+          document.body.appendChild(chatBtn);
 
-        // 气泡安全调用函数
-        const safeShowMsg = (msg) => {
-          if (oml2d && oml2d.tipsMessage) oml2d.tipsMessage(msg, 8000, 10);
-          else if (oml2d && oml2d.tips && oml2d.tips.showMessage) oml2d.tips.showMessage(msg, 8000, 10);
-          else alert("仙狐大人说：" + msg);
+          const safeShowMsg = (msg) => {
+            if (oml2d && oml2d.tipsMessage) oml2d.tipsMessage(msg, 8000, 10);
+            else if (oml2d && oml2d.tips && oml2d.tips.showMessage) oml2d.tips.showMessage(msg, 8000, 10);
+            else alert("仙狐大人说：" + msg);
+          };
+
+          // 3. 绑定 DeepSeek AI 大脑接口
+          chatBtn.onclick = async () => {
+            const userMsg = prompt("你想对仙狐大人说什么？");
+            if (!userMsg) return;
+
+            safeShowMsg('仙狐正在动用全部脑细胞思考中...');
+            try {
+              const res = await fetch('https://senko-ai-proxy.htklyf123.workers.dev', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userMsg })
+              });
+              const data = await res.json();
+              if (data.reply) safeShowMsg(data.reply);
+              else safeShowMsg('糟糕，脑电波被外星人拦截了...');
+            } catch(e) {
+              safeShowMsg('网络似乎被大风刮断了，连不上服务器呀~');
+            }
+          };
         };
 
-        // 3. 绑定点击发送给 DeepSeek
-        chatBtn.onclick = async () => {
-          const userMsg = prompt("你想对仙狐大人说什么？");
-          if (!userMsg) return;
-
-          safeShowMsg('仙狐正在动用全部脑细胞思考中...');
-          
-          try {
-            const res = await fetch('https://senko-ai-proxy.htklyf123.workers.dev', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ message: userMsg })
-            });
-            
-            const data = await res.json();
-            
-            if (data.reply) {
-              safeShowMsg(data.reply);
-            } else {
-              safeShowMsg('糟糕，脑电波被外星人拦截了...');
-            }
-          } catch(e) {
-            safeShowMsg('网络似乎被大风刮断了，连不上服务器呀~');
-          }
-        };
+        // 4. 【灵魂设计】动态异步加载引擎脚本！
+        // 这样即使网络爆炸，也只会导致看板娘不出现，博客文章绝对秒开！
+        const script = document.createElement('script');
+        script.src = 'https://fastly.jsdelivr.net/npm/oh-my-live2d/dist/index.min.js';
+        script.onload = loadOML2D;
+        document.body.appendChild(script);
       </script>
