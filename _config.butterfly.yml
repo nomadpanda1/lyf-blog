@@ -66,19 +66,24 @@ giscus:
   dark_theme: dark
 
 # ==========================================
-# 脚本注入 (Inject) - 用于挂载次世代看板娘
+# 脚本注入 (Inject) - 用于挂载次世代看板娘 + AI大脑
 # ==========================================
 inject:
   head:
+    # 注入一个极客范儿的聊天按钮样式 (固定在右下角，仙狐大人的左边)
+    - <style>#chat-btn {position:fixed; bottom:30px; right:280px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;} #chat-btn:hover {background:#ff7242; transform:scale(1.05);}</style>
   bottom:
-    # 核心引擎 (你的截图证明它已经完美运行了！)
     - <script src="https://cdn.jsdelivr.net/npm/oh-my-live2d/dist/index.min.js"></script>
     - |
       <script>
         OML2D.loadOml2d({
+          sayHello: false,
+          libraryUrls: {
+            cubism2: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2d.min.js',
+            cubism5: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2dcubismcore.min.js'
+          },
           models: [
             {
-              // 100% 真实有效的高清模型：仙狐大人 (Senko-san)
               path: 'https://fastly.jsdelivr.net/gh/Eikanya/Live2d-model/Live2D/Senko_Normals/senko.model3.json',
               position: [-50, 50],
               scale: 0.12,
@@ -86,7 +91,53 @@ inject:
             }
           ],
           tips: {
-            message: ['欢迎来到七月的峰の数字自留地！', '今天学 PLC 还是打《战争雷霆》？', '思考，编码，与世界交手。']
+            message: ['欢迎来到七月的峰の数字自留地！', '遇到Bug不要慌，先喝口水~', '思考，编码，与世界交手。']
           }
+        }).then((oml2d) => {
+          // 1. 在页面上动态创建一个聊天按钮
+          const chatBtn = document.createElement('div');
+          chatBtn.id = 'chat-btn';
+          chatBtn.innerText = '💬 呼叫仙狐大人';
+          document.body.appendChild(chatBtn);
+
+          // 2. 万能气泡展示函数 (兼容不同版本的引擎 API)
+          const showSenkoMsg = (msg) => {
+            if (typeof oml2d.tipsMessage === 'function') {
+              oml2d.tipsMessage(msg, 8000, 10);
+            } else if (oml2d.tips && typeof oml2d.tips.showMessage === 'function') {
+              oml2d.tips.showMessage(msg, 8000, 10);
+            } else {
+              alert("仙狐大人说：" + msg);
+            }
+          };
+
+          // 3. 点击按钮触发 AI 对话流程
+          chatBtn.onclick = async () => {
+            const userMsg = prompt("你想对仙狐大人说什么？");
+            if (!userMsg) return;
+
+            // 提示正在思考
+            showSenkoMsg('仙狐正在动用全部脑细胞思考中...');
+            
+            try {
+              // 4. 将问题发送给你部署在 Cloudflare 的秘密代理
+              const res = await fetch('https://senko-ai-proxy.htklyf123.workers.dev', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userMsg })
+              });
+              
+              const data = await res.json();
+              
+              // 5. 将 DeepSeek 的回复展示在气泡里！
+              if (data.reply) {
+                showSenkoMsg(data.reply);
+              } else {
+                showSenkoMsg('糟糕，脑电波被外星人拦截了...');
+              }
+            } catch(e) {
+              showSenkoMsg('网络似乎被大风刮断了，连不上服务器呀~');
+            }
+          };
         });
       </script>
