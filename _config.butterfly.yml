@@ -11,12 +11,11 @@ social:
   fas fa-envelope: mailto:863088821@qq.com || Email
 
 # ==========================================
-# 核心防墙：使用本地资源+自定义极速源
+# 核心防墙：强制切换至 cdnjs 以修复 Pjax 引擎崩溃问题
 # ==========================================
 CDN:
   internal_provider: local
-  third_party_provider: custom
-  custom_format: 'https://fastly.jsdelivr.net/npm/${npm_name}@${version}/${file}'
+  third_party_provider: cdnjs
 
 # ==========================================
 # 引擎超频：Pjax 无缝加载
@@ -94,13 +93,16 @@ giscus:
 # ==========================================
 inject:
   head:
+    # 强制注入图标库和音乐库
     - '<link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire_1-y/font-awesome/6.0.0/css/all.min.css">'
-    - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">'
+    - '<link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire_1-y/aplayer/1.10.1/APlayer.min.css">'
+    # 将日历CSS提前到头部加载，防止结构崩溃
+    - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/github-calendar@2.3.3/dist/github-calendar-responsive.css">'
     - |
       <style>
-        /* 🖱️ 1. 极客鼠标指针 */
-        body { cursor: url('https://fastly.jsdelivr.net/gh/sviptzk/StaticFile_FS@master/cursor/normal.cur'), auto !important; }
-        a, button, input, #chat-btn, .chat-action-btn, #oml2d-stage { cursor: url('https://fastly.jsdelivr.net/gh/sviptzk/StaticFile_FS@master/cursor/link.cur'), pointer !important; }
+        /* 🖱️ 1. 极客鼠标指针 (调用系统底层十字准星，100%防拦截) */
+        body { cursor: crosshair !important; }
+        a, button, input, #chat-btn, .chat-action-btn, #oml2d-stage { cursor: pointer !important; }
         
         /* 看板娘与聊天框样式 */
         #oml2d-stage { left: auto !important; right: 20px !important; bottom: 0 !important; transition: opacity 0.5s ease, visibility 0.5s ease !important; }
@@ -119,34 +121,42 @@ inject:
         .ai-content { color: #555; line-height: 1.6; min-height: 22px;}
         [data-theme="dark"] .ai-content { color: #ccc; }
 
-        /* 📊 3. GitHub 热力图日历样式 */
-        #github-calendar-container { background: rgba(255,255,255,0.85); padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
-        .calendar { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 12px; }
+        /* 📊 3. GitHub 热力图防溢出容器修复 */
+        #github-calendar-container { width: 100%; max-width: 100%; overflow-x: auto; background: rgba(255,255,255,0.85); padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); box-sizing: border-box; }
+        .calendar { width: 100%; min-width: 600px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 12px; }
         [data-theme="dark"] #github-calendar-container { background: rgba(0,0,0,0.5); border-color: #333; color: #ccc; }
         [data-theme="dark"] .ContributionCalendar-day[data-level="0"] { fill: #2d333b; }
       </style>
   bottom:
     - '<script type="text/javascript" src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire_1-y/canvas-nest.js/2.0.4/canvas-nest.js" color="73,177,245" opacity="0.8" zIndex="1" count="99"></script>'
-    - '<script src="https://fastly.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>'
+    - '<script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire_1-y/aplayer/1.10.1/APlayer.min.js"></script>'
     - '<script src="https://fastly.jsdelivr.net/npm/oh-my-live2d@0.19.3/dist/index.min.js"></script>'
+    - '<script src="https://fastly.jsdelivr.net/npm/github-calendar@2.3.3/dist/github-calendar.min.js"></script>'
+    - '<script src="https://fastly.jsdelivr.net/npm/tagcanvas@2.9.0/tagcanvas.min.js"></script>'
     - |
       <script>
-        // 💥 1. 点击爆炸特效 (专属哲理语录)
-        const clickWords = ["荒诞", "反抗", "自由", "推石头", "Bug", "赛博", "Existentialism"];
-        let clickIndex = 0;
-        document.addEventListener('click', (e) => {
-          const span = document.createElement('span');
-          span.innerText = clickWords[clickIndex];
-          clickIndex = (clickIndex + 1) % clickWords.length;
-          span.style.position = 'fixed'; span.style.left = e.clientX + 'px'; span.style.top = e.clientY + 'px';
-          span.style.color = `hsl(${Math.random() * 360}, 70%, 60%)`; span.style.fontWeight = 'bold';
-          span.style.pointerEvents = 'none'; span.style.zIndex = '99999'; span.style.transition = 'all 1s ease-out';
-          document.body.appendChild(span);
-          setTimeout(() => { span.style.transform = `translateY(-50px) scale(1.5)`; span.style.opacity = '0'; }, 10);
-          setTimeout(() => span.remove(), 1000);
-        });
+        // 💥 1. 点击爆炸特效
+        const initExplosion = () => {
+          if(window.explosion_loaded) return;
+          window.explosion_loaded = true;
+          const words = ["荒诞", "反抗", "自由", "推石头", "Bug", "赛博", "Existentialism"];
+          let clickIndex = 0;
+          document.addEventListener('click', (e) => {
+            const span = document.createElement('span');
+            span.innerText = words[clickIndex];
+            clickIndex = (clickIndex + 1) % words.length;
+            span.style.position = 'fixed'; span.style.left = e.clientX + 'px'; span.style.top = e.clientY + 'px';
+            span.style.color = `hsl(${Math.random() * 360}, 70%, 60%)`; span.style.fontWeight = 'bold';
+            span.style.pointerEvents = 'none'; span.style.zIndex = '99999'; span.style.transition = 'all 1s ease-out';
+            document.body.appendChild(span);
+            requestAnimationFrame(() => {
+              span.style.transform = `translateY(-50px) scale(1.5)`; span.style.opacity = '0';
+            });
+            setTimeout(() => span.remove(), 1000);
+          });
+        };
 
-        // 🟩 2. 全息 3D 标签云引擎
+        // 🟩 2. 全息 3D 标签云 (仅在标签页生效)
         const initTagCloud = () => {
           const tagCloud = document.querySelector('.tag-cloud-tags');
           if (tagCloud && !document.getElementById('tag-canvas')) {
@@ -154,40 +164,24 @@ inject:
             const canvas = document.createElement('canvas'); canvas.id = 'tag-canvas';
             canvas.width = tagCloud.parentElement.offsetWidth || 300; canvas.height = canvas.width * 0.8;
             tagCloud.parentElement.appendChild(canvas);
-            const loadTagCanvas = () => {
+            if(typeof TagCanvas !== 'undefined') {
               try { TagCanvas.Start('tag-canvas', 'tag-cloud-list', { textColour: '#49b1f5', outlineColour: 'transparent', reverse: true, depth: 0.8, maxSpeed: 0.05, weight: true, zoom: 1.1 }); } catch(e) {}
-            };
-            if (typeof TagCanvas === 'undefined') {
-              const script = document.createElement('script'); script.src = 'https://fastly.jsdelivr.net/npm/tagcanvas@2.9.0/tagcanvas.min.js';
-              script.onload = loadTagCanvas; document.body.appendChild(script);
-            } else { loadTagCanvas(); }
+            }
           }
         };
 
-        // 📊 3. GitHub 风格的“推石头”热力图日历
+        // 📊 3. GitHub 热力图日历 (防溢出修复版)
         const initGitHubCalendar = () => {
           const recentPosts = document.getElementById('recent-posts');
           if (recentPosts && !document.getElementById('github-calendar-container')) {
             const container = document.createElement('div'); container.id = 'github-calendar-container';
             container.innerHTML = '<div class="calendar" style="min-height: 120px; display: flex; align-items: center; justify-content: center; color: #49b1f5; font-weight: bold;">正在连接 GitHub 获取推石头记录...</div>';
             recentPosts.parentNode.insertBefore(container, recentPosts);
-
-            if(!document.getElementById('gh-cal-css')) {
-                const loadCSS = document.createElement('link'); loadCSS.id = 'gh-cal-css'; loadCSS.rel = 'stylesheet';
-                loadCSS.href = 'https://fastly.jsdelivr.net/npm/github-calendar@2.3.3/dist/github-calendar-responsive.css';
-                document.head.appendChild(loadCSS);
-            }
-
-            const runCal = () => {
-                GitHubCalendar(".calendar", "nomadpanda1", { responsive: true }).catch(()=> {
+            if(typeof GitHubCalendar !== 'undefined') {
+                GitHubCalendar(".calendar", "nomadpanda1", { responsive: true }).catch(()=>{
                     document.querySelector('.calendar').innerHTML = "推石头记录暂时无法获取~";
                 });
-            };
-
-            if(typeof GitHubCalendar === 'undefined') {
-                const loadJS = document.createElement('script'); loadJS.src = 'https://fastly.jsdelivr.net/npm/github-calendar@2.3.3/dist/github-calendar.min.js';
-                loadJS.onload = runCal; document.body.appendChild(loadJS);
-            } else { runCal(); }
+            }
           }
         };
 
@@ -334,6 +328,7 @@ inject:
         };
 
         const bootAll = () => {
+          try { initExplosion(); } catch(e){}
           try { initAudio(); } catch(e){}
           try { initOML2D(); } catch(e){}
           try { initAIAbs(); } catch(e){}
