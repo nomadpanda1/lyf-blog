@@ -90,7 +90,7 @@ giscus:
   dark_theme: dark
 
 # ==========================================
-# 脚本注入 - 终极修复方案
+# 脚本注入 - AI触觉交互、音乐、粒子、UI
 # ==========================================
 inject:
   head:
@@ -99,9 +99,9 @@ inject:
     - |
       <style>
         /* 强制仙狐大人靠右，平滑过渡，保护 WebGL */
-        #oml2d-stage { left: auto !important; right: 20px !important; bottom: 0 !important; transition: opacity 0.5s ease, visibility 0.5s ease !important; }
+        #oml2d-stage { left: auto !important; right: 20px !important; bottom: 0 !important; transition: opacity 0.5s ease, visibility 0.5s ease !important; cursor: pointer !important; }
         
-        /* 聊天框样式，配合右侧看板娘 */
+        /* 聊天框样式 */
         #chat-btn {position:fixed; bottom:30px; right:330px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;}
         #chat-btn:hover {background:#ff7242; transform:scale(1.05);}
         #chat-box {position:fixed; bottom:80px; right:330px; z-index:9998; background:rgba(255,255,255,0.85); padding:15px; border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); display:none; flex-direction:column; gap:10px; backdrop-filter:blur(10px); width:280px; border: 1px solid rgba(255,255,255,0.6);}
@@ -135,10 +135,8 @@ inject:
           postHeader.insertBefore(box, postHeader.firstChild);
           let i = 0;
           const typeWriter = setInterval(() => {
-            if(i < rawText.length) {
-              box.querySelector('.ai-content').innerHTML += rawText.charAt(i);
-              i++;
-            } else { clearInterval(typeWriter); }
+            if(i < rawText.length) { box.querySelector('.ai-content').innerHTML += rawText.charAt(i); i++; } 
+            else { clearInterval(typeWriter); }
           }, 30);
         };
 
@@ -150,21 +148,17 @@ inject:
           
           window.apInstance = new APlayer({
             container: document.getElementById('aplayer-container'),
-            fixed: true,
-            autoplay: true, // 核心机制：尝试自动播放
+            fixed: true, autoplay: true,
             audio: [{
-              name: 'Bad Apple!!',
-              artist: 'ZUN / Nomico',
+              name: 'Bad Apple!!', artist: 'ZUN / Nomico',
               url: 'https://fastly.jsdelivr.net/gh/kasuganosoras/BadApple@master/badapple.mp3',
               cover: '/img/avatar.jpg'
             }]
           });
 
-          // 破冰黑科技：当访客进入博客后，只要他在屏幕上点鼠标的任何一下（不管是点文章还是滑轮），音乐立刻强行启动！
+          // 音乐破冰自动播放
           document.addEventListener('click', () => {
-            if(window.apInstance && window.apInstance.audio.paused) {
-              window.apInstance.play();
-            }
+            if(window.apInstance && window.apInstance.audio.paused) window.apInstance.play();
           }, { once: true });
         };
 
@@ -172,9 +166,7 @@ inject:
           if(window.oml2d_loaded || typeof OML2D === 'undefined') return;
           window.oml2d_loaded = true;
           const oml2d = OML2D.loadOml2d({
-            sayHello: false,
-            menus: { disable: true }, // 【终极杀招】从底层逻辑上直接抹除自带菜单！
-            statusBar: { disable: true }, // 一并关闭状态条
+            sayHello: false, menus: { disable: true }, statusBar: { disable: true },
             libraryUrls: {
               cubism2: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2d.min.js',
               cubism5: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2dcubismcore.min.js'
@@ -227,25 +219,38 @@ inject:
 
           window.speechSynthesis.getVoices();
 
+          // 🦊 【全新注入：看板娘触觉交互系统】
+          document.addEventListener('click', (e) => {
+            const stage = document.getElementById('oml2d-stage');
+            if (stage && (e.target === stage || stage.contains(e.target))) {
+              // 每次戳她，随机触发一句反馈
+              const touchQuotes = [
+                "哎呀，别乱戳啦！脑电波要短路了！",
+                "摸摸头~ 今天修Bug辛苦啦！",
+                "检测到不明物理接触！防御系统启动！",
+                "西西弗斯的石头可不是用来砸我的！",
+                "正在进行高精度电磁场结算，请勿打扰~",
+                "再戳我，我就去拔你服务器的网线！"
+              ];
+              const randomQuote = touchQuotes[Math.floor(Math.random() * touchQuotes.length)];
+              safeShowMsg(randomQuote);
+              speakText(randomQuote);
+            }
+          });
+
           chatBtn.onclick = () => {
             if (chatBox.style.display === 'flex') chatBox.style.display = 'none';
             else { chatBox.style.display = 'flex'; inputField.focus(); }
           };
 
-          // 光学隐形开关
           closeBtn.onclick = () => {
             const stage = document.getElementById('oml2d-stage');
             if(stage) {
               if(stage.style.opacity === '0') {
-                stage.style.opacity = '1';
-                stage.style.pointerEvents = 'auto';
-                stage.style.visibility = 'visible';
-                closeBtn.innerText = '💤 仙狐休息';
-                safeShowMsg('我睡醒啦！');
+                stage.style.opacity = '1'; stage.style.pointerEvents = 'auto'; stage.style.visibility = 'visible';
+                closeBtn.innerText = '💤 仙狐休息'; safeShowMsg('我睡醒啦！');
               } else {
-                stage.style.opacity = '0';
-                stage.style.pointerEvents = 'none';
-                stage.style.visibility = 'hidden';
+                stage.style.opacity = '0'; stage.style.pointerEvents = 'none'; stage.style.visibility = 'hidden';
                 closeBtn.innerText = '🦊 唤醒仙狐';
               }
             }
@@ -272,15 +277,12 @@ inject:
         };
 
         const bootAll = () => {
-          try { initAudio(); } catch(e){ console.error(e); }
-          try { initOML2D(); } catch(e){ console.error(e); }
-          try { initAIAbs(); } catch(e){ console.error(e); }
+          try { initAudio(); } catch(e){}
+          try { initOML2D(); } catch(e){}
+          try { initAIAbs(); } catch(e){}
         };
 
         window.addEventListener('load', bootAll);
-        document.addEventListener('pjax:complete', () => {
-          try { initAIAbs(); } catch(e){}
-        });
-        
+        document.addEventListener('pjax:complete', () => { try { initAIAbs(); } catch(e){} });
         setTimeout(bootAll, 800);
       </script>
