@@ -11,7 +11,7 @@ social:
   fas fa-envelope: mailto:863088821@qq.com || Email
 
 # ==========================================
-# 核心防墙：强制切换至 Fastly，修复 Pjax 与粒子崩溃
+# 核心防墙
 # ==========================================
 CDN:
   internal_provider: local
@@ -97,20 +97,19 @@ inject:
     - '<link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire_1-y/font-awesome/6.0.0/css/all.min.css">'
     - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">'
     - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/github-calendar@2.3.3/dist/github-calendar-responsive.css">'
+    # 【核武级修复】强行在最头部注入国内字节跳动的 Pjax 引擎，彻底根除 Pjax is not defined 导致的音乐断流！
+    - '<script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire_1-y/pjax/0.2.8/pjax.min.js"></script>'
     - |
       <style>
         /* 🖱️ 1. 极客鼠标指针 */
         html, body { cursor: crosshair !important; }
         a, img, button, input, textarea, #chat-btn, .chat-action-btn, #oml2d-stage { cursor: pointer !important; }
         
-        /* 🚀 修复冲突：看板娘向左移动到 80px，给主题菜单让路 */
-        #oml2d-stage { left: auto !important; right: 80px !important; bottom: 0 !important; transition: opacity 0.5s ease, visibility 0.5s ease !important; }
-        
-        /* 🚀 修复冲突：聊天按钮和面板跟着向左移动 */
-        #chat-btn {position:fixed; bottom:30px; right:400px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;}
+        /* 看板娘与聊天框样式 */
+        #oml2d-stage { left: auto !important; right: 20px !important; bottom: 0 !important; transition: opacity 0.5s ease, visibility 0.5s ease !important; }
+        #chat-btn {position:fixed; bottom:30px; right:330px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;}
         #chat-btn:hover {background:#ff7242; transform:scale(1.05);}
-        #chat-box {position:fixed; bottom:80px; right:400px; z-index:9998; background:rgba(255,255,255,0.85); padding:15px; border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); display:none; flex-direction:column; gap:10px; backdrop-filter:blur(10px); width:280px; border: 1px solid rgba(255,255,255,0.6);}
-        
+        #chat-box {position:fixed; bottom:80px; right:330px; z-index:9998; background:rgba(255,255,255,0.85); padding:15px; border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); display:none; flex-direction:column; gap:10px; backdrop-filter:blur(10px); width:280px; border: 1px solid rgba(255,255,255,0.6);}
         #chat-input {width:100%; border:1px solid #ddd; padding:10px; border-radius:8px; outline:none; font-size:14px; box-sizing:border-box; background:rgba(255,255,255,0.9);}
         #chat-input:focus {border-color:#49b1f5;}
         .chat-action-btn {flex:1; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; transition:all 0.3s; color:white;}
