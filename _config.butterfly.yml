@@ -19,7 +19,7 @@ CDN:
   custom_format: 'https://fastly.jsdelivr.net/npm/${npm_name}@${version}/${file}'
 
 # ==========================================
-# 引擎超频：Pjax 无缝加载 (沉浸式BGM的核心)
+# 引擎超频：Pjax 无缝加载
 # ==========================================
 pjax:
   enable: true
@@ -32,7 +32,7 @@ code_mac_copy: true
 progress_bar: true
 
 # ==========================================
-# 导航栏 (已增加：灵感捕手 Bber 的专属入口)
+# 导航栏
 # ==========================================
 menu:
   首页: / || fas fa-home
@@ -90,14 +90,13 @@ giscus:
   dark_theme: dark
 
 # ==========================================
-# 脚本注入 - AI看娘、AI摘要、音乐、粒子、UI
+# 脚本注入 - AI看娘、AI摘要、原生音乐、粒子、UI
 # ==========================================
 inject:
   head:
     - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">'
     - |
       <style>
-        /* 聊天按钮与面板 */
         #chat-btn {position:fixed; bottom:30px; right:280px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;}
         #chat-btn:hover {background:#ff7242; transform:scale(1.05);}
         #chat-box {position:fixed; bottom:80px; right:280px; z-index:9998; background:rgba(255,255,255,0.85); padding:15px; border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); display:none; flex-direction:column; gap:10px; backdrop-filter:blur(10px); width:260px; border: 1px solid rgba(255,255,255,0.6);}
@@ -105,7 +104,6 @@ inject:
         #chat-input:focus {border-color:#49b1f5;}
         #chat-submit {background:#49b1f5; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; transition:all 0.3s;}
         #chat-submit:hover {background:#ff7242;}
-        /* AI 文章智能摘要样式 */
         #ai-abs-box { background: rgba(73,177,245,0.05); border: 1px solid #49b1f5; border-radius: 8px; padding: 15px; margin-bottom: 20px; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
         .ai-title { font-weight: bold; color: #49b1f5; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
         .ai-content { color: #555; line-height: 1.6; min-height: 22px;}
@@ -114,25 +112,20 @@ inject:
   bottom:
     - '<script type="text/javascript" src="https://fastly.jsdelivr.net/npm/canvas-nest.js@2.0.4/dist/canvas-nest.js" color="73,177,245" opacity="0.8" zIndex="1" count="99"></script>'
     - '<script src="https://fastly.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>'
-    - '<script src="https://fastly.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>'
-    - '<meting-js server="tencent" type="playlist" id="7455209707" fixed="true" mini="true" autoplay="false" loop="all" order="random" preload="auto" volume="0.5"></meting-js>'
+    - '<script src="https://fastly.jsdelivr.net/npm/oh-my-live2d/dist/index.min.js"></script>'
     - |
       <script>
-        // 1. AI 文章智能摘要引擎 (支持 Pjax 无缝加载)
+        // 1. AI 智能摘要
         const initAIAbs = () => {
           const postHeader = document.querySelector('#post');
           if(!postHeader || document.getElementById('ai-abs-box')) return;
           const content = document.querySelector('.post-content');
           if(!content) return;
-
-          // 提取文章前150字作为摘要基底
           const rawText = content.innerText.replace(/\s+/g, ' ').substring(0, 150) + '...';
           const box = document.createElement('div');
           box.id = 'ai-abs-box';
           box.innerHTML = `<div class="ai-title">🤖 赛博仙狐的脑内运算摘要</div><div class="ai-content"></div>`;
           postHeader.insertBefore(box, postHeader.firstChild);
-
-          // 极客打字机特效
           let i = 0;
           const typeWriter = setInterval(() => {
             if(i < rawText.length) {
@@ -142,11 +135,29 @@ inject:
           }, 30);
         };
 
-        // 2. 仙狐大人与萝莉音引擎 (防重复加载)
-        const initOML2D = () => {
-          if(window.oml2d_loaded) return;
-          window.oml2d_loaded = true;
+        // 2. 原生极简音乐播放器 (防宕机脱钩版)
+        const initAudio = () => {
+          if(document.getElementById('aplayer-container')) return;
+          const apContainer = document.createElement('div');
+          apContainer.id = 'aplayer-container';
+          document.body.appendChild(apContainer);
+          new APlayer({
+            container: document.getElementById('aplayer-container'),
+            fixed: true,
+            autoplay: false,
+            audio: [{
+              name: 'Cyberpunk Vibe',
+              artist: 'System',
+              url: 'https://cdn.pixabay.com/audio/2022/10/25/audio_27f12eb224.mp3',
+              cover: 'https://cdn.pixabay.com/audio/2022/10/25/08-36-31-294_200x200.jpg'
+            }]
+          });
+        };
 
+        // 3. 仙狐大人 (已补全引擎依赖)
+        const initOML2D = () => {
+          if(window.oml2d_loaded || typeof OML2D === 'undefined') return;
+          window.oml2d_loaded = true;
           const oml2d = OML2D.loadOml2d({
             sayHello: false,
             libraryUrls: {
@@ -219,8 +230,19 @@ inject:
           inputField.onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
         };
 
-        // 3. 执行启动逻辑 (监听原生与 Pjax 路由)
-        initOML2D();
-        initAIAbs();
-        document.addEventListener('pjax:complete', initAIAbs);
+        // 稳健启动器：哪怕其中一个报错，也不会牵连其他的
+        const bootAll = () => {
+          try { initAudio(); } catch(e){ console.error(e); }
+          try { initOML2D(); } catch(e){ console.error(e); }
+          try { initAIAbs(); } catch(e){ console.error(e); }
+        };
+
+        // 监听页面加载与无刷新跳转
+        window.addEventListener('load', bootAll);
+        document.addEventListener('pjax:complete', () => {
+          try { initAIAbs(); } catch(e){}
+        });
+        
+        // 极速兜底执行
+        setTimeout(bootAll, 800);
       </script>
