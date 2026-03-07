@@ -90,7 +90,7 @@ giscus:
   dark_theme: dark
 
 # ==========================================
-# 脚本注入 - AI触觉交互、音乐、粒子、UI
+# 脚本注入 - 满级赛博堡垒大一统方案
 # ==========================================
 inject:
   head:
@@ -98,10 +98,12 @@ inject:
     - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">'
     - |
       <style>
-        /* 强制仙狐大人靠右，平滑过渡，保护 WebGL */
-        #oml2d-stage { left: auto !important; right: 20px !important; bottom: 0 !important; transition: opacity 0.5s ease, visibility 0.5s ease !important; cursor: pointer !important; }
+        /* 🖱️ 1. 极客鼠标指针 */
+        body { cursor: url('https://fastly.jsdelivr.net/gh/sviptzk/StaticFile_FS@master/cursor/normal.cur'), auto !important; }
+        a, button, input, #chat-btn, .chat-action-btn, #oml2d-stage { cursor: url('https://fastly.jsdelivr.net/gh/sviptzk/StaticFile_FS@master/cursor/link.cur'), pointer !important; }
         
-        /* 聊天框样式 */
+        /* 看板娘与聊天框样式 */
+        #oml2d-stage { left: auto !important; right: 20px !important; bottom: 0 !important; transition: opacity 0.5s ease, visibility 0.5s ease !important; }
         #chat-btn {position:fixed; bottom:30px; right:330px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;}
         #chat-btn:hover {background:#ff7242; transform:scale(1.05);}
         #chat-box {position:fixed; bottom:80px; right:330px; z-index:9998; background:rgba(255,255,255,0.85); padding:15px; border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); display:none; flex-direction:column; gap:10px; backdrop-filter:blur(10px); width:280px; border: 1px solid rgba(255,255,255,0.6);}
@@ -116,6 +118,12 @@ inject:
         .ai-title { font-weight: bold; color: #49b1f5; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
         .ai-content { color: #555; line-height: 1.6; min-height: 22px;}
         [data-theme="dark"] .ai-content { color: #ccc; }
+
+        /* 📊 3. GitHub 热力图日历样式 */
+        #github-calendar-container { background: rgba(255,255,255,0.85); padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
+        .calendar { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 12px; }
+        [data-theme="dark"] #github-calendar-container { background: rgba(0,0,0,0.5); border-color: #333; color: #ccc; }
+        [data-theme="dark"] .ContributionCalendar-day[data-level="0"] { fill: #2d333b; }
       </style>
   bottom:
     - '<script type="text/javascript" src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire_1-y/canvas-nest.js/2.0.4/canvas-nest.js" color="73,177,245" opacity="0.8" zIndex="1" count="99"></script>'
@@ -123,6 +131,66 @@ inject:
     - '<script src="https://fastly.jsdelivr.net/npm/oh-my-live2d@0.19.3/dist/index.min.js"></script>'
     - |
       <script>
+        // 💥 1. 点击爆炸特效 (专属哲理语录)
+        const clickWords = ["荒诞", "反抗", "自由", "推石头", "Bug", "赛博", "Existentialism"];
+        let clickIndex = 0;
+        document.addEventListener('click', (e) => {
+          const span = document.createElement('span');
+          span.innerText = clickWords[clickIndex];
+          clickIndex = (clickIndex + 1) % clickWords.length;
+          span.style.position = 'fixed'; span.style.left = e.clientX + 'px'; span.style.top = e.clientY + 'px';
+          span.style.color = `hsl(${Math.random() * 360}, 70%, 60%)`; span.style.fontWeight = 'bold';
+          span.style.pointerEvents = 'none'; span.style.zIndex = '99999'; span.style.transition = 'all 1s ease-out';
+          document.body.appendChild(span);
+          setTimeout(() => { span.style.transform = `translateY(-50px) scale(1.5)`; span.style.opacity = '0'; }, 10);
+          setTimeout(() => span.remove(), 1000);
+        });
+
+        // 🟩 2. 全息 3D 标签云引擎
+        const initTagCloud = () => {
+          const tagCloud = document.querySelector('.tag-cloud-tags');
+          if (tagCloud && !document.getElementById('tag-canvas')) {
+            tagCloud.id = 'tag-cloud-list'; tagCloud.style.display = 'none';
+            const canvas = document.createElement('canvas'); canvas.id = 'tag-canvas';
+            canvas.width = tagCloud.parentElement.offsetWidth || 300; canvas.height = canvas.width * 0.8;
+            tagCloud.parentElement.appendChild(canvas);
+            const loadTagCanvas = () => {
+              try { TagCanvas.Start('tag-canvas', 'tag-cloud-list', { textColour: '#49b1f5', outlineColour: 'transparent', reverse: true, depth: 0.8, maxSpeed: 0.05, weight: true, zoom: 1.1 }); } catch(e) {}
+            };
+            if (typeof TagCanvas === 'undefined') {
+              const script = document.createElement('script'); script.src = 'https://fastly.jsdelivr.net/npm/tagcanvas@2.9.0/tagcanvas.min.js';
+              script.onload = loadTagCanvas; document.body.appendChild(script);
+            } else { loadTagCanvas(); }
+          }
+        };
+
+        // 📊 3. GitHub 风格的“推石头”热力图日历
+        const initGitHubCalendar = () => {
+          const recentPosts = document.getElementById('recent-posts');
+          if (recentPosts && !document.getElementById('github-calendar-container')) {
+            const container = document.createElement('div'); container.id = 'github-calendar-container';
+            container.innerHTML = '<div class="calendar" style="min-height: 120px; display: flex; align-items: center; justify-content: center; color: #49b1f5; font-weight: bold;">正在连接 GitHub 获取推石头记录...</div>';
+            recentPosts.parentNode.insertBefore(container, recentPosts);
+
+            if(!document.getElementById('gh-cal-css')) {
+                const loadCSS = document.createElement('link'); loadCSS.id = 'gh-cal-css'; loadCSS.rel = 'stylesheet';
+                loadCSS.href = 'https://fastly.jsdelivr.net/npm/github-calendar@2.3.3/dist/github-calendar-responsive.css';
+                document.head.appendChild(loadCSS);
+            }
+
+            const runCal = () => {
+                GitHubCalendar(".calendar", "nomadpanda1", { responsive: true }).catch(()=> {
+                    document.querySelector('.calendar').innerHTML = "推石头记录暂时无法获取~";
+                });
+            };
+
+            if(typeof GitHubCalendar === 'undefined') {
+                const loadJS = document.createElement('script'); loadJS.src = 'https://fastly.jsdelivr.net/npm/github-calendar@2.3.3/dist/github-calendar.min.js';
+                loadJS.onload = runCal; document.body.appendChild(loadJS);
+            } else { runCal(); }
+          }
+        };
+
         const initAIAbs = () => {
           const postHeader = document.querySelector('#post');
           if(!postHeader || document.getElementById('ai-abs-box')) return;
@@ -156,7 +224,6 @@ inject:
             }]
           });
 
-          // 音乐破冰自动播放
           document.addEventListener('click', () => {
             if(window.apInstance && window.apInstance.audio.paused) window.apInstance.play();
           }, { once: true });
@@ -219,22 +286,12 @@ inject:
 
           window.speechSynthesis.getVoices();
 
-          // 🦊 【全新注入：看板娘触觉交互系统】
           document.addEventListener('click', (e) => {
             const stage = document.getElementById('oml2d-stage');
             if (stage && (e.target === stage || stage.contains(e.target))) {
-              // 每次戳她，随机触发一句反馈
-              const touchQuotes = [
-                "哎呀，别乱戳啦！脑电波要短路了！",
-                "摸摸头~ 今天修Bug辛苦啦！",
-                "检测到不明物理接触！防御系统启动！",
-                "西西弗斯的石头可不是用来砸我的！",
-                "正在进行高精度电磁场结算，请勿打扰~",
-                "再戳我，我就去拔你服务器的网线！"
-              ];
+              const touchQuotes = ["哎呀，别乱戳啦！脑电波要短路了！", "摸摸头~ 今天修Bug辛苦啦！", "检测到不明物理接触！防御系统启动！", "西西弗斯的石头可不是用来砸我的！", "正在进行高精度电磁场结算，请勿打扰~", "再戳我，我就去拔你服务器的网线！"];
               const randomQuote = touchQuotes[Math.floor(Math.random() * touchQuotes.length)];
-              safeShowMsg(randomQuote);
-              speakText(randomQuote);
+              safeShowMsg(randomQuote); speakText(randomQuote);
             }
           });
 
@@ -280,9 +337,15 @@ inject:
           try { initAudio(); } catch(e){}
           try { initOML2D(); } catch(e){}
           try { initAIAbs(); } catch(e){}
+          try { initTagCloud(); } catch(e){}
+          try { initGitHubCalendar(); } catch(e){}
         };
 
         window.addEventListener('load', bootAll);
-        document.addEventListener('pjax:complete', () => { try { initAIAbs(); } catch(e){} });
+        document.addEventListener('pjax:complete', () => { 
+          try { initAIAbs(); } catch(e){} 
+          try { initTagCloud(); } catch(e){}
+          try { initGitHubCalendar(); } catch(e){}
+        });
         setTimeout(bootAll, 800);
       </script>
