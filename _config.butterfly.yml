@@ -11,11 +11,12 @@ social:
   fas fa-envelope: mailto:863088821@qq.com || Email
 
 # ==========================================
-# 核心防墙设置 (使用国内最稳的字节CDN拯救白屏)
+# 核心防墙设置：强制使用饿了么极速节点，100%找回图标！
 # ==========================================
 CDN:
-  internal_provider: cdnjs
-  third_party_provider: cdnjs
+  internal_provider: custom
+  third_party_provider: custom
+  custom_format: 'https://npm.elemecdn.com/${npm_name}@${version}/${file}'
 
 # ==========================================
 # 导航栏 (Menu)
@@ -75,32 +76,22 @@ giscus:
   dark_theme: dark
 
 # ==========================================
-# 脚本注入 - AI看娘、音乐、粒子、UI修复
+# 脚本注入 - AI看板娘、粒子背景、UI修正
 # ==========================================
 inject:
   head:
-    # 1. 强制注入字节跳动 CDN 的图标库 (拯救消失的导航栏和暗黑按钮)
-    - '<link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire_1-y/font-awesome/6.0.0/css/all.min.css">'
-    # 2. 音乐播放器样式
-    - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">'
-    # 3. 仙狐大人专属 UI
     - '<style>#chat-btn {position:fixed; bottom:30px; right:280px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;} #chat-btn:hover {background:#ff7242; transform:scale(1.05);} #chat-box {position:fixed; bottom:80px; right:280px; z-index:9998; background:rgba(255,255,255,0.85); padding:15px; border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); display:none; flex-direction:column; gap:10px; backdrop-filter:blur(10px); width:260px; border: 1px solid rgba(255,255,255,0.6);} #chat-input {width:100%; border:1px solid #ddd; padding:10px; border-radius:8px; outline:none; font-size:14px; box-sizing:border-box; background:rgba(255,255,255,0.9);} #chat-input:focus {border-color:#49b1f5;} #chat-submit {background:#49b1f5; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; transition:all 0.3s;} #chat-submit:hover {background:#ff7242;}</style>'
   bottom:
-    # 4. 强制挂载电磁粒子背景 (强行让背景生动起来)
-    - '<script type="text/javascript" src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire_1-y/canvas-nest.js/2.0.4/canvas-nest.js" color="73,177,245" opacity="0.7" zIndex="-1" count="99"></script>'
-    # 5. 音乐播放器 (切换为 QQ 音乐，防止网易云拦截)
-    - '<script src="https://fastly.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>'
-    - '<script src="https://fastly.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>'
-    - '<meting-js server="tencent" type="playlist" id="7455209707" fixed="true" mini="true" autoplay="false" loop="all" order="random" preload="auto" volume="0.5"></meting-js>'
-    # 6. AI 仙狐大人完整逻辑 (包含萝莉音)
+    # 强制拉高层级 (zIndex="1")，让粒子越过背景图浮现出来
+    - '<script type="text/javascript" src="https://npm.elemecdn.com/canvas-nest.js@2.0.4/dist/canvas-nest.js" color="73,177,245" opacity="0.8" zIndex="1" count="99"></script>'
     - |
       <script>
         const loadOML2D = () => {
           const oml2d = OML2D.loadOml2d({
             sayHello: false,
             libraryUrls: {
-              cubism2: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2d.min.js',
-              cubism5: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2dcubismcore.min.js'
+              cubism2: 'https://npm.elemecdn.com/oh-my-live2d@0.19.3/lib/live2d.min.js',
+              cubism5: 'https://npm.elemecdn.com/oh-my-live2d@0.19.3/lib/live2dcubismcore.min.js'
             },
             models: [
               {
@@ -178,7 +169,7 @@ inject:
         };
 
         const script = document.createElement('script');
-        script.src = 'https://fastly.jsdelivr.net/npm/oh-my-live2d/dist/index.min.js';
+        script.src = 'https://npm.elemecdn.com/oh-my-live2d@0.19.3/dist/index.min.js';
         script.onload = loadOML2D;
         document.body.appendChild(script);
       </script>
