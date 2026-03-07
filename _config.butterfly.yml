@@ -11,10 +11,10 @@ social:
   fas fa-envelope: mailto:863088821@qq.com || Email
 
 # ==========================================
-# 核心防墙设置：强制本地加载，斩断图标丢失的可能
+# 核心防墙设置：全量接管 CDN，修复 Pjax 报错
 # ==========================================
 CDN:
-  internal_provider: local
+  internal_provider: custom
   third_party_provider: custom
   custom_format: 'https://fastly.jsdelivr.net/npm/${npm_name}@${version}/${file}'
 
@@ -135,7 +135,7 @@ inject:
           }, 30);
         };
 
-        // 2. 原生极简音乐播放器 (防宕机脱钩版)
+        // 2. 原生东方曲播放器
         const initAudio = () => {
           if(document.getElementById('aplayer-container')) return;
           const apContainer = document.createElement('div');
@@ -146,15 +146,15 @@ inject:
             fixed: true,
             autoplay: false,
             audio: [{
-              name: 'Cyberpunk Vibe',
-              artist: 'System',
-              url: 'https://cdn.pixabay.com/audio/2022/10/25/audio_27f12eb224.mp3',
-              cover: 'https://cdn.pixabay.com/audio/2022/10/25/08-36-31-294_200x200.jpg'
+              name: 'Bad Apple!!',
+              artist: 'ZUN / Nomico',
+              url: 'https://fastly.jsdelivr.net/gh/kasuganosoras/BadApple@master/badapple.mp3',
+              cover: '/img/avatar.jpg'
             }]
           });
         };
 
-        // 3. 仙狐大人 (已补全引擎依赖)
+        // 3. 仙狐大人 
         const initOML2D = () => {
           if(window.oml2d_loaded || typeof OML2D === 'undefined') return;
           window.oml2d_loaded = true;
@@ -230,19 +230,16 @@ inject:
           inputField.onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
         };
 
-        // 稳健启动器：哪怕其中一个报错，也不会牵连其他的
         const bootAll = () => {
           try { initAudio(); } catch(e){ console.error(e); }
           try { initOML2D(); } catch(e){ console.error(e); }
           try { initAIAbs(); } catch(e){ console.error(e); }
         };
 
-        // 监听页面加载与无刷新跳转
         window.addEventListener('load', bootAll);
         document.addEventListener('pjax:complete', () => {
           try { initAIAbs(); } catch(e){}
         });
         
-        // 极速兜底执行
         setTimeout(bootAll, 800);
       </script>
