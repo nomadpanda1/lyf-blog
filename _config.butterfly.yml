@@ -98,13 +98,10 @@ inject:
     - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">'
     - |
       <style>
-        /* 1. 强制仙狐大人靠右，平滑过渡，保护 WebGL */
+        /* 强制仙狐大人靠右，平滑过渡，保护 WebGL */
         #oml2d-stage { left: auto !important; right: 20px !important; bottom: 0 !important; transition: opacity 0.5s ease, visibility 0.5s ease !important; }
         
-        /* 2. 彻底抹杀自带的废弃菜单 */
-        #oml2d-menu { display: none !important; }
-
-        /* 3. 聊天框样式，配合右侧看板娘 */
+        /* 聊天框样式，配合右侧看板娘 */
         #chat-btn {position:fixed; bottom:30px; right:330px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;}
         #chat-btn:hover {background:#ff7242; transform:scale(1.05);}
         #chat-box {position:fixed; bottom:80px; right:330px; z-index:9998; background:rgba(255,255,255,0.85); padding:15px; border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); display:none; flex-direction:column; gap:10px; backdrop-filter:blur(10px); width:280px; border: 1px solid rgba(255,255,255,0.6);}
@@ -150,10 +147,11 @@ inject:
           const apContainer = document.createElement('div');
           apContainer.id = 'aplayer-container';
           document.body.appendChild(apContainer);
-          new APlayer({
+          
+          window.apInstance = new APlayer({
             container: document.getElementById('aplayer-container'),
             fixed: true,
-            autoplay: false,
+            autoplay: true, // 核心机制：尝试自动播放
             audio: [{
               name: 'Bad Apple!!',
               artist: 'ZUN / Nomico',
@@ -161,6 +159,13 @@ inject:
               cover: '/img/avatar.jpg'
             }]
           });
+
+          // 破冰黑科技：当访客进入博客后，只要他在屏幕上点鼠标的任何一下（不管是点文章还是滑轮），音乐立刻强行启动！
+          document.addEventListener('click', () => {
+            if(window.apInstance && window.apInstance.audio.paused) {
+              window.apInstance.play();
+            }
+          }, { once: true });
         };
 
         const initOML2D = () => {
@@ -168,6 +173,8 @@ inject:
           window.oml2d_loaded = true;
           const oml2d = OML2D.loadOml2d({
             sayHello: false,
+            menus: { disable: true }, // 【终极杀招】从底层逻辑上直接抹除自带菜单！
+            statusBar: { disable: true }, // 一并关闭状态条
             libraryUrls: {
               cubism2: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2d.min.js',
               cubism5: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2dcubismcore.min.js'
@@ -225,7 +232,7 @@ inject:
             else { chatBox.style.display = 'flex'; inputField.focus(); }
           };
 
-          // 光学隐形开关：保护 WebGL 渲染
+          // 光学隐形开关
           closeBtn.onclick = () => {
             const stage = document.getElementById('oml2d-stage');
             if(stage) {
