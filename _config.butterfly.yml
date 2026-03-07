@@ -11,12 +11,11 @@ social:
   fas fa-envelope: mailto:863088821@qq.com || Email
 
 # ==========================================
-# 核心防墙设置：全量接管 CDN，修复 Pjax 报错
+# 核心防墙：使用 CDNJS 保证 Pjax 无缝引擎正常加载
 # ==========================================
 CDN:
-  internal_provider: custom
-  third_party_provider: custom
-  custom_format: 'https://fastly.jsdelivr.net/npm/${npm_name}@${version}/${file}'
+  internal_provider: local
+  third_party_provider: cdnjs
 
 # ==========================================
 # 引擎超频：Pjax 无缝加载
@@ -90,28 +89,33 @@ giscus:
   dark_theme: dark
 
 # ==========================================
-# 脚本注入 - AI看娘、AI摘要、原生音乐、粒子、UI
+# 脚本注入 - AI看娘(右移)、AI摘要、原生音乐(左侧)、UI
 # ==========================================
 inject:
   head:
-    - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">'
+    # 强制注入字节跳动 CDN 的图标库，无视浏览器拦截插件，找回导航栏！
+    - '<link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire_1-y/font-awesome/6.0.0/css/all.min.css">'
+    - '<link rel="stylesheet" href="https://lf26-cdn-tos.bytecdntp.com/cdn/expire_1-y/aplayer/1.10.1/APlayer.min.css">'
     - |
       <style>
-        #chat-btn {position:fixed; bottom:30px; right:280px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;}
+        /* 聊天按钮与面板，位置向左偏移给仙狐大人让出右下角空间 */
+        #chat-btn {position:fixed; bottom:30px; right:330px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;}
         #chat-btn:hover {background:#ff7242; transform:scale(1.05);}
-        #chat-box {position:fixed; bottom:80px; right:280px; z-index:9998; background:rgba(255,255,255,0.85); padding:15px; border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); display:none; flex-direction:column; gap:10px; backdrop-filter:blur(10px); width:260px; border: 1px solid rgba(255,255,255,0.6);}
+        #chat-box {position:fixed; bottom:80px; right:330px; z-index:9998; background:rgba(255,255,255,0.85); padding:15px; border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); display:none; flex-direction:column; gap:10px; backdrop-filter:blur(10px); width:280px; border: 1px solid rgba(255,255,255,0.6);}
         #chat-input {width:100%; border:1px solid #ddd; padding:10px; border-radius:8px; outline:none; font-size:14px; box-sizing:border-box; background:rgba(255,255,255,0.9);}
         #chat-input:focus {border-color:#49b1f5;}
-        #chat-submit {background:#49b1f5; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; transition:all 0.3s;}
-        #chat-submit:hover {background:#ff7242;}
+        .chat-action-btn {flex:1; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; transition:all 0.3s; color:white;}
+        #chat-submit {background:#49b1f5;} #chat-submit:hover {background:#ff7242;}
+        #chat-close-btn {background:#ff4d4f;} #chat-close-btn:hover {background:#cf1322;}
+        /* AI 摘要样式 */
         #ai-abs-box { background: rgba(73,177,245,0.05); border: 1px solid #49b1f5; border-radius: 8px; padding: 15px; margin-bottom: 20px; font-size: 14px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
         .ai-title { font-weight: bold; color: #49b1f5; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
         .ai-content { color: #555; line-height: 1.6; min-height: 22px;}
         [data-theme="dark"] .ai-content { color: #ccc; }
       </style>
   bottom:
-    - '<script type="text/javascript" src="https://fastly.jsdelivr.net/npm/canvas-nest.js@2.0.4/dist/canvas-nest.js" color="73,177,245" opacity="0.8" zIndex="1" count="99"></script>'
-    - '<script src="https://fastly.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>'
+    - '<script type="text/javascript" src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire_1-y/canvas-nest.js/2.0.4/canvas-nest.js" color="73,177,245" opacity="0.8" zIndex="1" count="99"></script>'
+    - '<script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire_1-y/aplayer/1.10.1/APlayer.min.js"></script>'
     - '<script src="https://fastly.jsdelivr.net/npm/oh-my-live2d/dist/index.min.js"></script>'
     - |
       <script>
@@ -135,7 +139,7 @@ inject:
           }, 30);
         };
 
-        // 2. 原生东方曲播放器
+        // 2. 原生东方曲播放器 (永远在左下角)
         const initAudio = () => {
           if(document.getElementById('aplayer-container')) return;
           const apContainer = document.createElement('div');
@@ -154,7 +158,7 @@ inject:
           });
         };
 
-        // 3. 仙狐大人 
+        // 3. 仙狐大人 (已移至右下角，并加入休眠开关)
         const initOML2D = () => {
           if(window.oml2d_loaded || typeof OML2D === 'undefined') return;
           window.oml2d_loaded = true;
@@ -166,7 +170,9 @@ inject:
             },
             models: [{
               path: 'https://fastly.jsdelivr.net/gh/Eikanya/Live2d-model@master/Live2D/Senko_Normals/senko.model3.json',
-              position: [-50, 50], scale: 0.12, stageStyle: { width: 320 }
+              position: [0, 50], scale: 0.12, 
+              // 【重点】强制将模型钉在右下角
+              stageStyle: { width: 320, right: '0px', left: 'auto' }
             }],
             tips: {
               style: { width: '240px', minHeight: '70px', padding: '14px', fontSize: '14px', lineHeight: '1.6', wordBreak: 'break-word' },
@@ -174,17 +180,25 @@ inject:
             }
           });
 
+          // 构建 UI 界面
           const chatBtn = document.createElement('div');
           chatBtn.id = 'chat-btn'; chatBtn.innerText = '💬 呼叫仙狐大人';
           document.body.appendChild(chatBtn);
 
           const chatBox = document.createElement('div');
           chatBox.id = 'chat-box';
-          chatBox.innerHTML = `<input type="text" id="chat-input" placeholder="想聊点什么？(按回车发送)" autocomplete="off"/><button id="chat-submit">发送电波 🚀</button>`;
+          chatBox.innerHTML = `
+            <input type="text" id="chat-input" placeholder="想聊点什么？(按回车发送)" autocomplete="off"/>
+            <div style="display:flex; gap:10px; margin-top:5px;">
+              <button id="chat-submit" class="chat-action-btn">发送 🚀</button>
+              <button id="chat-close-btn" class="chat-action-btn">💤 仙狐休息</button>
+            </div>
+          `;
           document.body.appendChild(chatBox);
 
           const inputField = document.getElementById('chat-input');
           const submitBtn = document.getElementById('chat-submit');
+          const closeBtn = document.getElementById('chat-close-btn');
 
           const safeShowMsg = (msg) => {
             if (oml2d && oml2d.tipsMessage) oml2d.tipsMessage(msg, 10000, 10);
@@ -208,6 +222,21 @@ inject:
           chatBtn.onclick = () => {
             if (chatBox.style.display === 'flex') chatBox.style.display = 'none';
             else { chatBox.style.display = 'flex'; inputField.focus(); }
+          };
+
+          // 一键开启/关闭看板娘功能
+          closeBtn.onclick = () => {
+            const stage = document.getElementById('oml2d-stage');
+            if(stage) {
+              if(stage.style.display === 'none') {
+                stage.style.display = 'block';
+                closeBtn.innerText = '💤 仙狐休息';
+                safeShowMsg('我睡醒啦！');
+              } else {
+                stage.style.display = 'none';
+                closeBtn.innerText = '🦊 唤醒仙狐';
+              }
+            }
           };
 
           const sendMessage = async () => {
