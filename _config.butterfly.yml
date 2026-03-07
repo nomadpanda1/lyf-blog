@@ -11,7 +11,7 @@ social:
   fas fa-envelope: mailto:863088821@qq.com || Email
 
 # ==========================================
-# 核心防墙设置：强制切换主题默认 CDN (解决白屏真凶)
+# 核心防墙设置：强制切换主题默认 CDN
 # ==========================================
 CDN:
   internal_provider: cdnjs
@@ -46,7 +46,7 @@ subtitle:
 # ==========================================
 card_announcement:
   enable: true
-  content: 欢迎来到我的数字自留地！目前正在西南石油大学修读电气工程及其自动化，持续更新关于技术、自动化与哲学的思考记录。
+  content: 欢迎来到我的数字自留地！持续更新关于Web开发、自动化与荒诞派哲学的思考记录。
 
 # ==========================================
 # 评论系统 (Comments)
@@ -67,11 +67,22 @@ giscus:
   dark_theme: dark
 
 # ==========================================
-# 脚本注入 (Inject) - 异步防阻塞加载模式
+# 脚本注入 (Inject) - 绝美输入框与大容量气泡
 # ==========================================
 inject:
   head:
-    - '<style>#chat-btn {position:fixed; bottom:30px; right:280px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;} #chat-btn:hover {background:#ff7242; transform:scale(1.05);}</style>'
+    - |
+      <style>
+        /* 呼叫按钮样式 */
+        #chat-btn {position:fixed; bottom:30px; right:280px; z-index:9999; padding:10px 18px; background:#49b1f5; color:#fff; border-radius:30px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1); font-size:14px; font-weight:bold; transition:all 0.3s;}
+        #chat-btn:hover {background:#ff7242; transform:scale(1.05);}
+        /* 全新设计的毛玻璃输入框样式 */
+        #chat-box {position:fixed; bottom:80px; right:280px; z-index:9998; background:rgba(255,255,255,0.85); padding:15px; border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.15); display:none; flex-direction:column; gap:10px; backdrop-filter:blur(10px); width:260px; border: 1px solid rgba(255,255,255,0.6);}
+        #chat-input {width:100%; border:1px solid #ddd; padding:10px; border-radius:8px; outline:none; font-size:14px; box-sizing:border-box; background:rgba(255,255,255,0.9);}
+        #chat-input:focus {border-color:#49b1f5;}
+        #chat-submit {background:#49b1f5; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; transition:all 0.3s;}
+        #chat-submit:hover {background:#ff7242;}
+      </style>
   bottom:
     - |
       <script>
@@ -84,7 +95,6 @@ inject:
             },
             models: [
               {
-                // 终极修复：使用全球极其稳定的 fastly 节点直连 GitHub 仓库
                 path: 'https://fastly.jsdelivr.net/gh/Eikanya/Live2d-model@master/Live2D/Senko_Normals/senko.model3.json',
                 position: [-50, 50],
                 scale: 0.12,
@@ -92,26 +102,60 @@ inject:
               }
             ],
             tips: {
-              message: ['欢迎来到七月的峰の数字自留地！', '遇到Bug不要慌，先喝口水~', '思考，编码，与世界交手。']
+              // 🚀 加大加宽气泡框容量！
+              style: {
+                width: '240px',
+                minHeight: '70px',
+                padding: '14px',
+                fontSize: '14px',
+                lineHeight: '1.6',
+                wordBreak: 'break-word'
+              },
+              message: ['欢迎来到七月的峰の数字自留地！', '代码跑不通？不如去打把《战争雷霆》。', '推石头的西西弗斯，今天也要加油哦！']
             }
           });
 
+          // 1. 创建优雅的UI面板
           const chatBtn = document.createElement('div');
           chatBtn.id = 'chat-btn';
           chatBtn.innerText = '💬 呼叫仙狐大人';
           document.body.appendChild(chatBtn);
 
+          const chatBox = document.createElement('div');
+          chatBox.id = 'chat-box';
+          chatBox.innerHTML = `
+            <input type="text" id="chat-input" placeholder="输入想说的话 (按回车发送)..." autocomplete="off"/>
+            <button id="chat-submit">发送电波 🚀</button>
+          `;
+          document.body.appendChild(chatBox);
+
+          const inputField = document.getElementById('chat-input');
+          const submitBtn = document.getElementById('chat-submit');
+
           const safeShowMsg = (msg) => {
-            if (oml2d && oml2d.tipsMessage) oml2d.tipsMessage(msg, 8000, 10);
-            else if (oml2d && oml2d.tips && oml2d.tips.showMessage) oml2d.tips.showMessage(msg, 8000, 10);
-            else alert("仙狐大人说：" + msg);
+            if (oml2d && oml2d.tipsMessage) oml2d.tipsMessage(msg, 10000, 10);
+            else if (oml2d && oml2d.tips && oml2d.tips.showMessage) oml2d.tips.showMessage(msg, 10000, 10);
           };
 
-          chatBtn.onclick = async () => {
-            const userMsg = prompt("你想对仙狐大人说什么？");
-            if (!userMsg) return;
+          // 2. 点击按钮显示/隐藏输入框
+          chatBtn.onclick = () => {
+            if (chatBox.style.display === 'flex') {
+              chatBox.style.display = 'none';
+            } else {
+              chatBox.style.display = 'flex';
+              inputField.focus();
+            }
+          };
 
-            safeShowMsg('仙狐正在动用全部脑细胞思考中...');
+          // 3. 核心发送逻辑
+          const sendMessage = async () => {
+            const userMsg = inputField.value.trim();
+            if (!userMsg) return;
+            
+            inputField.value = '';
+            chatBox.style.display = 'none'; // 发送后自动收起
+            safeShowMsg('仙狐正在脑内运算中...🦊');
+            
             try {
               const res = await fetch('https://senko-ai-proxy.htklyf123.workers.dev', {
                 method: 'POST',
@@ -122,9 +166,13 @@ inject:
               if (data.reply) safeShowMsg(data.reply);
               else safeShowMsg('糟糕，脑电波被外星人拦截了...');
             } catch(e) {
-              safeShowMsg('网络似乎被大风刮断了，连不上服务器呀~');
+              safeShowMsg('网络被风刮断了，稍后再试吧~');
             }
           };
+
+          // 绑定点击发送和回车发送
+          submitBtn.onclick = sendMessage;
+          inputField.onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
         };
 
         const script = document.createElement('script');
