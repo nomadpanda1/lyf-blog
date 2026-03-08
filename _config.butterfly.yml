@@ -15,22 +15,13 @@ social:
 # ==========================================
 CDN:
   internal_provider: local
-  third_party_provider: custom
-  custom_format: 'https://fastly.jsdelivr.net/npm/${npm_name}@${version}/${file}'
+  third_party_provider: unpkg
 
 # ==========================================
 # 引擎超频：Pjax 无缝加载
 # ==========================================
 pjax:
   enable: true
-
-# ==========================================
-# 关闭导致红字报错的统计插件 (净化控制台)
-# ==========================================
-busuanzi:
-  site_uv: false
-  site_pv: false
-  page_pv: false
 
 # ==========================================
 # 极客美学：Mac风格代码块 & 顶部阅读进度条
@@ -98,16 +89,15 @@ giscus:
   dark_theme: dark
 
 # ==========================================
-# 脚本注入 - 满级赛博堡垒绝对防御版
+# 脚本注入 - 轻量满血版 (移除3D云，新增趣味彩蛋)
 # ==========================================
 inject:
   head:
-    # 🛡️【终极防爆网】伪装 typed 变量，彻底解决 Pjax 切换崩溃问题！
     - '<script>window.typed = window.typed || { destroy: () => {} };</script>'
-    - '<script src="https://fastly.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script>'
-    - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">'
-    - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">'
-    - '<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/github-calendar@2.3.3/dist/github-calendar-responsive.css">'
+    - '<script src="https://unpkg.com/pjax@0.2.8/pjax.min.js"></script>'
+    - '<link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">'
+    - '<link rel="stylesheet" href="https://unpkg.com/aplayer@1.10.1/dist/APlayer.min.css">'
+    - '<link rel="stylesheet" href="https://unpkg.com/github-calendar@2.3.3/dist/github-calendar-responsive.css">'
     - |
       <style>
         html, body { cursor: crosshair !important; }
@@ -130,13 +120,13 @@ inject:
         [data-theme="dark"] .ContributionCalendar-day[data-level="0"] { fill: #2d333b; }
       </style>
   bottom:
-    - '<script src="https://fastly.jsdelivr.net/npm/canvas-nest.js@2.0.4/dist/canvas-nest.js" color="73,177,245" opacity="0.8" zIndex="1" count="99"></script>'
-    - '<script src="https://fastly.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>'
-    - '<script src="https://fastly.jsdelivr.net/npm/oh-my-live2d@0.19.3/dist/index.min.js"></script>'
-    - '<script src="https://fastly.jsdelivr.net/npm/github-calendar@2.3.3/dist/github-calendar.min.js"></script>'
-    - '<script src="https://fastly.jsdelivr.net/npm/tagcanvas@2.9.0/tagcanvas.min.js"></script>'
+    - '<script src="https://unpkg.com/canvas-nest.js@2.0.4/dist/canvas-nest.js" color="73,177,245" opacity="0.8" zIndex="1" count="99"></script>'
+    - '<script src="https://unpkg.com/aplayer@1.10.1/dist/APlayer.min.js"></script>'
+    - '<script src="https://unpkg.com/oh-my-live2d@0.19.3/dist/index.min.js"></script>'
+    - '<script src="https://unpkg.com/github-calendar@2.3.3/dist/github-calendar.min.js"></script>'
     - |
       <script>
+        // 💥 1. 点击爆炸特效
         const initExplosion = () => {
           if(window.explosion_loaded) return;
           window.explosion_loaded = true;
@@ -155,25 +145,38 @@ inject:
           });
         };
 
-        const initTagCloud = () => {
-          const tagCloud = document.querySelector('.tag-cloud-list') || document.querySelector('.tag-cloud-tags');
-          if (tagCloud) {
-            let existingCanvas = document.getElementById('tag-canvas');
-            if(existingCanvas) existingCanvas.remove();
-            
-            const tags = tagCloud.querySelectorAll('a');
-            if(tags.length === 0) return;
-            
-            tagCloud.id = 'tag-cloud-list-id'; tagCloud.style.display = 'none';
-            const canvas = document.createElement('canvas'); canvas.id = 'tag-canvas';
-            canvas.width = tagCloud.parentElement.offsetWidth || 300; canvas.height = canvas.width * 0.75;
-            tagCloud.parentElement.appendChild(canvas);
-            if(typeof TagCanvas !== 'undefined') {
-              try { TagCanvas.Start('tag-canvas', 'tag-cloud-list-id', { textColour: '#49b1f5', outlineColour: 'transparent', reverse: true, depth: 0.8, maxSpeed: 0.05, weight: true, zoom: 1.1 }); } catch(e) {}
+        // 🎭 2. 新功能：离开页面伪装特效
+        const initTabSpoofing = () => {
+          if(window.spoofing_loaded) return;
+          window.spoofing_loaded = true;
+          var OriginTitle = document.title;
+          var titleTime;
+          document.addEventListener('visibilitychange', function () {
+            if (document.hidden) {
+              document.title = '👀 仙狐大人：你去哪了呀？';
+              clearTimeout(titleTime);
+            } else {
+              document.title = '✨ 欢迎回来！继续推石头吧！';
+              titleTime = setTimeout(function () {
+                document.title = OriginTitle;
+              }, 2000);
             }
-          }
+          });
         };
 
+        // 💻 3. 新功能：F12 极客隐藏彩蛋
+        const initConsoleEgg = () => {
+          if(window.egg_loaded) return;
+          window.egg_loaded = true;
+          console.log(
+            '\n %c 峰の数字自留地 %c 思考，编码，与世界交手 \n\n',
+            'color: #fff; background: #49b1f5; padding:8px 15px; border-radius: 5px 0 0 5px;',
+            'color: #fff; background: #333; padding:8px 15px; border-radius: 0 5px 5px 0;'
+          );
+          console.log('%c 加缪说：推石头的过程本身，就足以充实一颗人心。', 'color: #49b1f5; font-size: 14px;');
+        };
+
+        // 📊 4. GitHub 热力图日历
         const initGitHubCalendar = () => {
           if (location.pathname !== '/' && location.pathname !== '/index.html') return;
           const recentPosts = document.getElementById('recent-posts');
@@ -192,6 +195,7 @@ inject:
           }
         };
 
+        // 🤖 5. AI 智能摘要
         const initAIAbs = () => {
           const postHeader = document.querySelector('#post');
           if(!postHeader || document.getElementById('ai-abs-box')) return;
@@ -209,6 +213,7 @@ inject:
           }, 30);
         };
 
+        // 🎵 6. 原生音乐播放器 (修复CORS，换用安全稳定的防拦截音源)
         const initAudio = () => {
           if(document.getElementById('aplayer-container') || typeof APlayer === 'undefined') return;
           const apContainer = document.createElement('div');
@@ -219,8 +224,9 @@ inject:
             container: document.getElementById('aplayer-container'),
             fixed: true, autoplay: true,
             audio: [{
-              name: 'Bad Apple!!', artist: 'ZUN / Nomico',
-              url: 'https://fastly.jsdelivr.net/gh/kasuganosoras/BadApple@master/badapple.mp3',
+              name: '青鸟 (Blue Bird)', artist: 'Ikimonogakari',
+              // 采用防拦截的安全公用 CDN 音源，彻底解决 403 跨域报错
+              url: 'https://fastly.jsdelivr.net/gh/moezx/cdn@3.1.9/mp3/sakura.mp3',
               cover: '/img/avatar.jpg'
             }]
           });
@@ -229,14 +235,15 @@ inject:
           }, { once: true });
         };
 
+        // 🦊 7. 仙狐大人与触觉系统
         const initOML2D = () => {
           if(window.oml2d_loaded || typeof OML2D === 'undefined') return;
           window.oml2d_loaded = true;
           const oml2d = OML2D.loadOml2d({
             sayHello: false, menus: { disable: true }, statusBar: { disable: true },
             libraryUrls: {
-              cubism2: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2d.min.js',
-              cubism5: 'https://fastly.jsdelivr.net/gh/oh-my-live2d/oh-my-live2d@main/lib/live2dcubismcore.min.js'
+              cubism2: 'https://unpkg.com/oh-my-live2d@main/lib/live2d.min.js',
+              cubism5: 'https://unpkg.com/oh-my-live2d@main/lib/live2dcubismcore.min.js'
             },
             models: [{
               path: 'https://fastly.jsdelivr.net/gh/Eikanya/Live2d-model@master/Live2D/Senko_Normals/senko.model3.json',
@@ -335,19 +342,19 @@ inject:
 
         const bootAll = () => {
           try { initExplosion(); } catch(e){}
+          try { initTabSpoofing(); } catch(e){}
+          try { initConsoleEgg(); } catch(e){}
           try { initAudio(); } catch(e){}
           try { initOML2D(); } catch(e){}
           try { initAIAbs(); } catch(e){}
-          try { initTagCloud(); } catch(e){}
           try { initGitHubCalendar(); } catch(e){}
         };
 
         window.addEventListener('load', bootAll);
         
-        // Pjax 无缝引擎钩子：页面切换时重新渲染内部特效！
+        // Pjax 页面切换钩子
         document.addEventListener('pjax:complete', () => { 
           try { initAIAbs(); } catch(e){} 
-          try { initTagCloud(); } catch(e){}
           try { initGitHubCalendar(); } catch(e){}
         });
         setTimeout(bootAll, 800);
