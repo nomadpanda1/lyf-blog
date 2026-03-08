@@ -89,7 +89,7 @@ giscus:
   dark_theme: dark
 
 # ==========================================
-# 脚本注入 - 轻量满血版 (移除3D云，新增趣味彩蛋)
+# 脚本注入 - 最终完美版
 # ==========================================
 inject:
   head:
@@ -126,7 +126,6 @@ inject:
     - '<script src="https://unpkg.com/github-calendar@2.3.3/dist/github-calendar.min.js"></script>'
     - |
       <script>
-        // 💥 1. 点击爆炸特效
         const initExplosion = () => {
           if(window.explosion_loaded) return;
           window.explosion_loaded = true;
@@ -145,7 +144,6 @@ inject:
           });
         };
 
-        // 🎭 2. 新功能：离开页面伪装特效
         const initTabSpoofing = () => {
           if(window.spoofing_loaded) return;
           window.spoofing_loaded = true;
@@ -157,14 +155,11 @@ inject:
               clearTimeout(titleTime);
             } else {
               document.title = '✨ 欢迎回来！继续推石头吧！';
-              titleTime = setTimeout(function () {
-                document.title = OriginTitle;
-              }, 2000);
+              titleTime = setTimeout(function () { document.title = OriginTitle; }, 2000);
             }
           });
         };
 
-        // 💻 3. 新功能：F12 极客隐藏彩蛋
         const initConsoleEgg = () => {
           if(window.egg_loaded) return;
           window.egg_loaded = true;
@@ -176,7 +171,6 @@ inject:
           console.log('%c 加缪说：推石头的过程本身，就足以充实一颗人心。', 'color: #49b1f5; font-size: 14px;');
         };
 
-        // 📊 4. GitHub 热力图日历
         const initGitHubCalendar = () => {
           if (location.pathname !== '/' && location.pathname !== '/index.html') return;
           const recentPosts = document.getElementById('recent-posts');
@@ -184,9 +178,7 @@ inject:
             const card = document.createElement('div');
             card.className = 'recent-post-item'; 
             card.id = 'github-calendar-card';
-            card.style.padding = '24px';
-            card.style.width = '100%';
-            card.style.boxSizing = 'border-box';
+            card.style.padding = '24px'; card.style.width = '100%'; card.style.boxSizing = 'border-box';
             card.innerHTML = `<div style="font-weight:bold; color:#49b1f5; font-size:1.1rem; margin-bottom:10px;"><i class="fab fa-github"></i> GitHub 推石头记录</div><div class="gh-calendar-wrapper"><div class="calendar">正在读取推石头数据...</div></div>`;
             recentPosts.insertBefore(card, recentPosts.firstChild);
             if(typeof GitHubCalendar !== 'undefined') {
@@ -195,7 +187,6 @@ inject:
           }
         };
 
-        // 🤖 5. AI 智能摘要
         const initAIAbs = () => {
           const postHeader = document.querySelector('#post');
           if(!postHeader || document.getElementById('ai-abs-box')) return;
@@ -213,7 +204,7 @@ inject:
           }, 30);
         };
 
-        // 🎵 6. 原生音乐播放器 (修复CORS，换用安全稳定的防拦截音源)
+        // 🎵 6. 原生音乐播放器 (引入超级稳定的 GHProxy 代理节点，彻底解决跨域与拦截！)
         const initAudio = () => {
           if(document.getElementById('aplayer-container') || typeof APlayer === 'undefined') return;
           const apContainer = document.createElement('div');
@@ -224,9 +215,9 @@ inject:
             container: document.getElementById('aplayer-container'),
             fixed: true, autoplay: true,
             audio: [{
-              name: '青鸟 (Blue Bird)', artist: 'Ikimonogakari',
-              // 采用防拦截的安全公用 CDN 音源，彻底解决 403 跨域报错
-              url: 'https://fastly.jsdelivr.net/gh/moezx/cdn@3.1.9/mp3/sakura.mp3',
+              name: 'Bad Apple!!', artist: 'ZUN / Nomico',
+              // 突破跨域拦截与 jsdelivr 封杀的终极密码：
+              url: 'https://ghproxy.net/https://raw.githubusercontent.com/kasuganosoras/BadApple/master/badapple.mp3',
               cover: '/img/avatar.jpg'
             }]
           });
@@ -235,7 +226,6 @@ inject:
           }, { once: true });
         };
 
-        // 🦊 7. 仙狐大人与触觉系统
         const initOML2D = () => {
           if(window.oml2d_loaded || typeof OML2D === 'undefined') return;
           window.oml2d_loaded = true;
